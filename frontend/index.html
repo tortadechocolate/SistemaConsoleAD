@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema moderno e completo para gerenciamento, cadastro e consulta de consoles de videogame.">
+  <title>Console Vault | Gerenciador de Consoles</title>
+  
+  <!-- Fontes Google: Outfit e Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Estilos principais -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho Principal -->
+  <header class="navbar" id="mainHeader">
+    <div class="container nav-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <path d="M6 12h4m-2-2v4"></path>
+            <line x1="15" y1="11" x2="15.01" y2="11"></line>
+            <line x1="18" y1="13" x2="18.01" y2="13"></line>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Console<span>Vault</span></h1>
+          <span class="badge">Gestão Gamer</span>
+        </div>
+      </div>
+
+      <!-- Barra de Ações do Header -->
+      <div class="header-actions">
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Filtrar por modelo ou empresa..." autocomplete="off">
+        </div>
+        <button id="btnOpenAddModal" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Cadastrar Console
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="container main-content">
+    
+    <!-- Painel de Resumo / Métricas -->
+    <section class="metrics-bar" id="metricsBar">
+      <div class="metric-card">
+        <div class="metric-info">
+          <span class="metric-label">Consoles Cadastrados</span>
+          <span class="metric-value" id="metricTotal">0</span>
+        </div>
+        <div class="metric-icon metric-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <path d="M6 12h4m-2-2v4"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-info">
+          <span class="metric-label">Valor Médio</span>
+          <span class="metric-value" id="metricAverage">R$ 0,00</span>
+        </div>
+        <div class="metric-icon metric-cyan">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-info">
+          <span class="metric-label">Status da API</span>
+          <span class="metric-value status-indicator" id="metricApiStatus">
+            <span class="dot dot-online"></span> Conectada
+          </span>
+        </div>
+        <div class="metric-icon metric-emerald">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cabeçalho da Lista -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Catálogo de Videogames</h2>
+        <p class="section-subtitle">Visualize, cadastre e edite consoles armazenados no banco de dados.</p>
+      </div>
+      <button id="btnReload" class="btn btn-secondary" title="Recarregar catálogo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"></path>
+          <path d="M1 20v-6h6"></path>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        Recarregar
+      </button>
+    </div>
+
+    <!-- Área de Estados: Carregamento, Erro, Vazio e Grade de Consoles -->
+    <div id="contentArea">
+      
+      <!-- Estado de Carregamento (Loading Skeleton/Spinner) -->
+      <div id="loadingState" class="state-container loading-state">
+        <div class="spinner"></div>
+        <p>Buscando consoles cadastrados na API...</p>
+      </div>
+
+      <!-- Estado de Erro de Conexão com a API -->
+      <div id="errorState" class="state-container error-state" style="display: none;">
+        <div class="state-icon error-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 id="errorMessageTitle">Falha ao se conectar com a API</h3>
+        <p id="errorMessageDesc">Não foi possível carregar os consoles. Verifique se o servidor backend está em execução.</p>
+        <button id="btnRetry" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"></path>
+          </svg>
+          Tentar Novamente
+        </button>
+      </div>
+
+      <!-- Estado Vazio (Sem Consoles) -->
+      <div id="emptyState" class="state-container empty-state" style="display: none;">
+        <div class="state-icon empty-icon">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <path d="M6 12h4m-2-2v4"></path>
+            <circle cx="16" cy="12" r="1"></circle>
+          </svg>
+        </div>
+        <h3>Nenhum console cadastrado ainda</h3>
+        <p>Comece adicionando seu primeiro videogame ao catálogo agora mesmo!</p>
+        <button id="btnEmptyAdd" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Cadastrar Meu Primeiro Console
+        </button>
+      </div>
+
+      <!-- Grade de Cards de Consoles -->
+      <div id="consolesGrid" class="consoles-grid" style="display: none;">
+        <!-- Injetado dinamicamente via app.js -->
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modal de Cadastro / Edição -->
+  <div class="modal-overlay" id="consoleModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 id="modalTitle">Cadastrar Console</h3>
+          <span class="modal-subtitle" id="modalSubtitle">Preencha os dados do console abaixo</span>
+        </div>
+        <button class="modal-close" id="btnCloseModal" title="Fechar modal">&times;</button>
+      </div>
+
+      <form id="consoleForm" novalidate>
+        <input type="hidden" id="consoleId" value="">
+
+        <!-- Linha 1: Empresa e Modelo -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="empresaInput">Empresa Fabricante *</label>
+            <input type="text" id="empresaInput" name="empresa" placeholder="Ex: Sony, Microsoft, Nintendo, Sega" required autocomplete="off">
+            <span class="input-error" id="empresaError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="modeloInput">Modelo do Console *</label>
+            <input type="text" id="modeloInput" name="modelo" placeholder="Ex: PlayStation 5, Xbox Series X" required autocomplete="off">
+            <span class="input-error" id="modeloError"></span>
+          </div>
+        </div>
+
+        <!-- Linha 2: Preço e Data de Lançamento -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="precoInput">Preço Sugerido (R$) *</label>
+            <input type="number" id="precoInput" name="preco" step="0.01" min="0" placeholder="Ex: 3999.90" required>
+            <span class="input-error" id="precoError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="dataLancamentoInput">Data de Lançamento *</label>
+            <input type="date" id="dataLancamentoInput" name="dataLancamento" required>
+            <span class="input-error" id="dataLancamentoError"></span>
+          </div>
+        </div>
+
+        <!-- Linha 3: Foto (URL) -->
+        <div class="form-group">
+          <label for="fotoInput">URL da Foto de Divulgação *</label>
+          <input type="url" id="fotoInput" name="foto" placeholder="https://exemplo.com/imagem.jpg" required autocomplete="off">
+          <span class="input-error" id="fotoError"></span>
+          
+          <!-- Prévia da Foto -->
+          <div class="photo-preview-container" id="previewContainer" style="display: none;">
+            <span class="preview-label">Pré-visualização da imagem:</span>
+            <img id="photoPreview" src="" alt="Prévia da imagem do console">
+          </div>
+        </div>
+
+        <!-- Rodapé do Modal com Ações -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelModal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitModal">
+            <span class="btn-text" id="btnSubmitText">Salvar Console</span>
+            <span class="btn-spinner" id="btnSubmitSpinner" style="display: none;"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div class="modal-overlay" id="confirmDeleteModal" style="display: none;">
+    <div class="modal-card modal-confirm">
+      <div class="confirm-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+      <h3>Confirmar Exclusão</h3>
+      <p id="confirmDeleteText">Deseja realmente remover este console do catálogo? Esta ação não poderá ser desfeita.</p>
+      
+      <div class="modal-footer justify-center">
+        <button type="button" class="btn btn-secondary" id="btnCancelDelete">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmDelete">
+          <span id="btnDeleteText">Sim, Excluir</span>
+          <span class="btn-spinner" id="btnDeleteSpinner" style="display: none;"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Toasts de Notificação Flutuante -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+</body>
+</html>
